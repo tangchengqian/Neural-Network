@@ -7,7 +7,7 @@ maxEpochs = round(x(2));%最大训练周期
 InitialLearnRate = x(3);%初始学习率
 
 num_samples = length(X);       % 样本个数 
-kim = 1;                      % 延时步长（kim个历史数据作为自变量）
+kim = 5;                      % 延时步长（kim个历史数据作为自变量）
 zim =  1;                      % 跨zim个时间点进行预测
 or_dim = size(X,2);
 
