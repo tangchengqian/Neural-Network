@@ -1,57 +1,45 @@
 function [u, u_hat, omega] = VMD(signal, alpha, tau, K, DC, init, tol)
-% Variational Mode Decomposition
-% Authors: Konstantin Dragomiretskiy and Dominique Zosso
-% zosso@math.ucla.edu --- http://www.math.ucla.edu/~zosso
-% Initial release 2013-12-12 (c) 2013
-%
 % Input and Parameters:
 % ---------------------
-% signal  - the time domain signal (1D) to be decomposed
-% alpha   - the balancing parameter of the data-fidelity constraint
-% tau     - time-step of the dual ascent ( pick 0 for noise-slack )
-% K       - the number of modes to be recovered
-% DC      - true if the first mode is put and kept at DC (0-freq)
-% init    - 0 = all omegas start at 0
-%                    1 = all omegas start uniformly distributed
-%                    2 = all omegas initialized randomly
-% tol     - tolerance of convergence criterion; typically around 1e-6
-%
-% Output:
-% -------
-% u       - the collection of decomposed modes
-% u_hat   - spectra of the modes
-% omega   - estimated mode center-frequencies
-%
-% When using this code, please do cite our paper:
-% -----------------------------------------------
-% K. Dragomiretskiy, D. Zosso, Variational Mode Decomposition, IEEE Trans.
-% on Signal Processing (in press)
-% please check here for update reference: 
-%          http://dx.doi.org/10.1109/TSP.2013.2288675
 
-
+% Input Parameters:
+% signal：要分解的时域信号
+% alpha： 惩罚因子，也称平衡参数
+% tau：噪声容忍度
+% K：分解的模态数
+% DC：直流分量
+% init：初始化中心频率
+%       0 = all omegas start at 0
+%       1 = all omegas start uniformly distributed
+%       2 = all omegas initialized randomly
+% tol：收敛准则容忍度；通常在1e-6左右。
+%  
+% Output Parameters:
+% u：分解模式的集合
+% u_hat：模式的频谱
+% omega：估计模式中心频率
 
 %---------- Preparations
 
-% Period and sampling frequency of input signal
+% 输入信号的周期和采样频率
 save_T = length(signal);
 fs = 1/save_T;
 
-% extend the signal by mirroring
+% 通过镜像扩展信号
 T = save_T;
 f_mirror(1:T/2) = signal(T/2:-1:1);
 f_mirror(T/2+1:3*T/2) = signal;
 f_mirror(3*T/2+1:2*T) = signal(T:-1:T/2+1);
 f = f_mirror;
 
-% Time Domain 0 to T (of mirrored signal)
+% 时域0到T(镜像信号)
 T = length(f);
 t = (1:T)/T;
 
 % Spectral Domain discretization
 freqs = t-0.5-1/T;
 
-% Maximum number of iterations (if not converged yet, then it won't anyway)
+% 最大迭代数
 N = 500;
 
 % For future generalizations: individual alpha for each mode
